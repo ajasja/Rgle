@@ -36,15 +36,17 @@ module RGle
       @indent_count-=1
       @indent_count=0 if @indent_count<0
     end
+    def to_s
+      @gle_string
+    end
+    
     def method_missing(sym, *args)      
       push_to_gle_string "#{sym} #{args.map{|a| a.to_s}.join(" ")}"      
     end
 
-    def to_s
-      @gle_string
-    end
 
-    def begin(sym, &block)
+    #special building methods start here
+    def beg(sym, *args, &block)
       
         push_to_gle_string("begin #{sym}")
         do_indent
