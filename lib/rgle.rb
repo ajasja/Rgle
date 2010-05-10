@@ -19,14 +19,14 @@ module RGle
 
     #adda a method which jiust joins all its arguments as string
     def define_general_build_method(*symbols)
-      symbols.each do |sym|
-        puts "#{self.inspect} definign #{sym}"
-        class_eval %{
-        def #{sym}(*args)
-
-          puts #{sym}
-        end
-        }
+      symbols.each do |method_name|
+       puts "#{self.inspect} definign #{sym}"
+       send :define_method, method_name do |args|
+         gle_string += "#{method_name} #{args.map{|a| a.to_s}.join(" ")}\n"
+       end
+        define sym.to_s do
+          
+        end #define
       end # symbols
     end
 
