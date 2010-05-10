@@ -16,17 +16,18 @@ end
 #puts just.class.build_arguments 1,2 ,:sym, "string"
 #just.amethod
 
-gle = RGleBuilder.new
-gle.amethod 1, 2, 3, :sy
-gle.begin(:graph) do
-  "asdad"
+#gle = RGleBuilder.new
+#gle.amethod 1, 2, 3, :sy
+#gle.begin(:graph) do
+#  "asdad"
+#end
+#puts gle
+#puts gle.inspect
+
+gle = RGleBuilder.gle_layout do
+  amethod 1, 3, 4
 end
-puts gle.gle_string
+puts gle
 puts gle.inspect
 
-#gle = RGleBuilder.gle_layout do
-#  define_general_build_method :amethod
-#  amethod 1, 3, 4
-#end
-#
 #puts gle.gle_string

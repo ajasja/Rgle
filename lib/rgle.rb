@@ -11,16 +11,17 @@ module RGle
 
     def self.gle_layout &block
       gle_builder = new
-      class_eval &block
+      gle_builder.instance_eval &block
       return gle_builder
     end
 
 
-
-    def method_missing(sym, *args)
+    def push_to_gle_string(str)
+      @gle_string << str + "\n"
+    end
+    def method_missing(sym, *args)      
+      push_to_gle_string "#{sym} #{args.map{|a| a.to_s}.join(" ")}"
       
-      @gle_string << "#{sym} #{args.map{|a| a.to_s}.join(" ")}\n"
-      #send(sym, *args)
     end
 
     def to_s
