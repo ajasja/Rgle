@@ -26,6 +26,10 @@ end
 
 gle = RGleBuilder.gle_layout do
   amethod 1, 3, 4
+  
+  begin :graph do
+    amove 1, 2
+  end
 end
 puts gle
 puts gle.inspect
