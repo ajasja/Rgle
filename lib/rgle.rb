@@ -92,64 +92,74 @@ module RGle
         @layout_vdir = :top_to_bottom if @layout_vdir==:tb
         @layout_vdir = :bottom_to_top if @layout_vdir==:bt
       end #if
+
+      #if thumbsize has been set
+      if @thumbsize then
+        make_and_push_gle_line(:size,@layout[0]*@thumbsize[0], @layout1*@thumbsize[1])
+      end
     end
   
 
     def thumbsize x, y
       @thumbsize = [x, y]
+      if @layout then
+        make_and_push_gle_line(:size, @layout[0]*@thumbsize[0], @layout[1]*@thumbsize[1])
+      end
     end
 
-    def xaxis *args
+  
+
+  def xaxis *args
      
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:xaxis, :min, h[:min], :max, h[:max])
-      else
-        make_and_push_gle_line(:xaxis, args)
-      end
+    if (args.size == 1) and (args[0].is_a?(Hash)) then
+      h = args[0]
+      make_and_push_gle_line(:xaxis, :min, h[:min], :max, h[:max])
+    else
+      make_and_push_gle_line(:xaxis, args)
     end
+  end
 
-    def yaxis *args
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:yaxis, :min, h[:min], :max, h[:max])
-      else
-        make_and_push_gle_line(:yaxis, args)
-      end
+  def yaxis *args
+    if (args.size == 1) and (args[0].is_a?(Hash)) then
+      h = args[0]
+      make_and_push_gle_line(:yaxis, :min, h[:min], :max, h[:max])
+    else
+      make_and_push_gle_line(:yaxis, args)
     end
-    def x2axis *args
-      puts "#{args.size} #{args.class}"
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:xaxis, :min, h[:min], :max, h[:max])
-      else
-        make_and_push_gle_line(:xaxis, args)
-      end
+  end
+  def x2axis *args
+    puts "#{args.size} #{args.class}"
+    if (args.size == 1) and (args[0].is_a?(Hash)) then
+      h = args[0]
+      make_and_push_gle_line(:xaxis, :min, h[:min], :max, h[:max])
+    else
+      make_and_push_gle_line(:xaxis, args)
     end
+  end
 
-    def y2axis *args
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:yaxis, :min, h[:min], :max, h[:max])
-      else
-        make_and_push_gle_line(:yaxis, args)
-      end
+  def y2axis *args
+    if (args.size == 1) and (args[0].is_a?(Hash)) then
+      h = args[0]
+      make_and_push_gle_line(:yaxis, :min, h[:min], :max, h[:max])
+    else
+      make_and_push_gle_line(:yaxis, args)
     end
+  end
 
-    def begin_graph(*args, &block)
-      generic_begin_end_block(:graph, *args, &block)
-    end
+  def begin_graph(*args, &block)
+    generic_begin_end_block(:graph, *args, &block)
+  end
 
-    # just a router. Graphs and such may need special handling
-    def beg(sym, *args, &block)
-      case sym
-      when :graph then begin_graph(*args, &block)
-      else
-        generic_begin_end_block(sym, *args, &block)
-      end #case
-    end #beg
+  # just a router. Graphs and such may need special handling
+  def beg(sym, *args, &block)
+    case sym
+    when :graph then begin_graph(*args, &block)
+    else
+      generic_begin_end_block(sym, *args, &block)
+    end #case
+  end #beg
 
 
-  end #class
+end #class
 
 end #module
