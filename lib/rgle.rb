@@ -21,7 +21,7 @@ module RGle
     def define_general_build_method(*symbols)
       symbols.each do |sym|
         puts "#{self.inspect} definign #{sym}"
-        iclass_eval %{
+        class_eval %{
         def #{sym}(*args)
 
           puts #{sym}
