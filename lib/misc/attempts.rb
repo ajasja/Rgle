@@ -24,14 +24,38 @@ end
 #puts gle
 #puts gle.inspect
 
-gle = RGleBuilder.gle_layout do
-  amethod 1, 3, 4
-  
-  begin :graph do
-    amove 1, 2
+gle = RGleBuilder.build do
+  layout 2, 3
+  thumbsize 12, 8 
+  beg :graph do
+     xaxis :min => -1, :max => 1
+     yaxis "min -1 max 1"
+     xtitle "kot [deg]"
+     xlabels :off
+
+     let ""
+     d2 ""
+     data "file.name", "d1=c1,c3"
+     data  :file => "file.name", :d1 => "c1,c3"
+     data  :sql => "SELECT Chi, Phi FROM diehedrals WHERE resid=18 AND frame>1000 AND frame<3000",
+           :file => "file.name", :plot => :all
+     
+
+     
+
+
+
+  end
+  raw ""
+  beg :key do
+
+  end
+  raw ""
+  beg :qsave do
+
   end
 end
+
 puts gle
-puts gle.inspect
 
 #puts gle.gle_string
