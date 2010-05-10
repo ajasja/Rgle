@@ -17,9 +17,10 @@ end
 #just.amethod
 
 gle = RGleBuilder.new
-gle.define_general_build_method :amethod
 gle.amethod 1, 2, 3, :sy
-#gle.beg(:graph) do {puts "some bla"}
+gle.begin(:graph) do
+  "asdad"
+end
 puts gle.gle_string
 puts gle.inspect
 
