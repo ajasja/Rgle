@@ -20,6 +20,7 @@ module RGle
       end
       assert_equal "xaxis min -1 max -1\n", gle.to_s
     end
+
     def test_layout_direction
       gle = RGleBuilder.build do
         layout 2, 4, :left => :right, :top => :bottom
@@ -55,5 +56,30 @@ module RGle
       assert_match "size 24 30", gle.to_s
     end
 
+    def test_begin_graph
+      gle = RGleBuilder.build do
+        beg :graph do
+          size 2, 2
+        end
+      end
+      assert_match "begin graph", gle.to_s
+      assert_match "end graph", gle.to_s
+
+      gle = RGleBuilder.build do
+        begin_graph do
+          size 2, 2
+        end
+      end
+      assert_match "begin graph", gle.to_s
+      assert_match "end graph", gle.to_s
+
+    end
+
+    def test_get_graph_position
+      gle = RGleBuilder.build do
+        layout 2, 4, :rl, :bt
+        thumbsize 10, 12
+      end
+    end
   end
 end
