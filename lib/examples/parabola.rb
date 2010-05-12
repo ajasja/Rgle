@@ -1,7 +1,7 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-require 'rgle'
+require './rgle'
 include RGle
 
 gle = RGleBuilder.build do
@@ -9,7 +9,7 @@ gle = RGleBuilder.build do
   beg :graph do
     title "Parabola"
     xtitle "x"
-    ytitle "f(x) = (x-2)^2"
+    ytitle '"f(x) = (x-2)^2"'
     let "d1 = (x-2)^2 from 0 to 4 step 0.1"
 
     key "pos br compact"
@@ -18,4 +18,5 @@ gle = RGleBuilder.build do
   end
 end
 
+gle.plot! :file_name => File.dirname(__FILE__)+"/parabola.gle"
 puts gle

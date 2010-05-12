@@ -10,7 +10,7 @@ module RGle
   end
 
   class RGleBuilder
-    attr_accessor :gle_string, :indent_count, :indent_string
+    attr_accessor :gle_string, :indent_count, :indent_string, :gle_file_name, :gle_executable
     attr_accessor :layout_hdir, :layout_vdir, :gle_command
     #attr_reader :layout, :thumbsize
     def initialize
@@ -24,6 +24,9 @@ module RGle
       @gle_command = 'gle'
       @cur_graph_number = 0;
       @cur_in_graph = false
+      @gle_executable = "gle"
+      @gle_options = "-p"
+      @gle_file_name =  nil
     end
 
     def self.build &block
@@ -47,6 +50,7 @@ module RGle
     def do_indent
       @indent_count+=1
     end
+
     def do_unindent
       @indent_count-=1
       @indent_count=0 if @indent_count<0
@@ -72,6 +76,18 @@ module RGle
     def get_graph_position(pos_number)
       
     end
+
+
+    def save_to_file a_file_name
+      @gle_file_name = a_file_name if a_file_name
+      if not @gle_file_name then raise "Must specify script file name" end
+      File.open(@gle_file_name, "w") { |f| f.write self.to_s}
+    end
+    #executes gle with the -p option
+    def plot! opts
+      save_to_file opts[:file_name]
+      `#{@gle_executable} -p #{@gle_file_name}`
+    end
     ######special building methods start here##################
     # layout direction can be specified as
     # :left => :right, :top => :bottom or
@@ -85,7 +101,7 @@ module RGle
       @layout = [x, y]
      
       if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]        
+        h = args[0]
         if h.has_key?(:right) then @layout_hdir=:right_to_left else @layout_hdir=:left_to_right end
         if h.has_key?(:bottom) then @layout_vdir=:bottom_to_top else @layout_vdir=:top_to_bottom end
       end #if
