@@ -18,5 +18,5 @@ gle = RGleBuilder.build do
   end
 end
 
-gle.plot! :file_name => File.dirname(__FILE__)+"/parabola.gle"
+gle.preview! :file_name => File.dirname(__FILE__)+"/parabola.gle"
 puts gle

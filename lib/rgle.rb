@@ -84,7 +84,7 @@ module RGle
       File.open(@gle_file_name, "w") { |f| f.write self.to_s}
     end
     #executes gle with the -p option
-    def plot! opts
+    def preview! opts
       save_to_file opts[:file_name]
       `#{@gle_executable} -p #{@gle_file_name}`
     end
