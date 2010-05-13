@@ -81,5 +81,19 @@ module RGle
         thumbsize 10, 12
       end
     end
+
+    def test_build_with_file_name
+      gle = RGleBuilder.build do
+        layout 2, 4, :rl, :bt
+        thumbsize 10, 12
+      end
+      assert_equal nil,gle.gle_file_name
+
+      gle = RGleBuilder.build "my.gle" do
+        layout 2, 4, :rl, :bt
+        thumbsize 10, 12
+      end
+      assert_equal "my.gle",gle.gle_file_name
+    end
   end
 end

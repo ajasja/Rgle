@@ -29,8 +29,9 @@ module RGle
       @gle_file_name =  nil
     end
 
-    def self.build &block
+    def self.build a_file_name=nil, &block
       gle_builder = new
+      gle_builder.gle_file_name = a_file_name unless (a_file_name.nil? or a_file_name.empty?)
       gle_builder.instance_eval &block
       return gle_builder
     end
