@@ -95,5 +95,18 @@ module RGle
       end
       assert_equal "my.gle",gle.gle_file_name
     end
+
+    def test_append
+      gle = RGleBuilder.build "my.gle" do
+        size 1, 2
+      end
+      assert_match "size 1 2", gle.to_s
+
+      gle.append do
+        size 2, 2
+      end
+      assert_match "size 1 2", gle.to_s
+      assert_match "size 2 2", gle.to_s
+    end
   end
 end

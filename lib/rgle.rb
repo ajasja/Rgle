@@ -36,6 +36,11 @@ module RGle
       return gle_builder
     end
 
+    def append &block
+      self.instance_eval &block
+      return self
+    end
+    
     def make_gle_line(*args)
       args.flatten.map{|a| a.to_s}.join(" ")
     end
