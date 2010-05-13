@@ -61,5 +61,6 @@ end
 
 #graphs.plot!
 
-#graphs.plot :output_base_name => "some", :format => :csv, :raw => "-p"
+#graphs.plot :output => "some", :format => :csv, :options => "-p"
+#graphs.plot :output => "some.png", :raw => "-p"
 puts graphs.to_s

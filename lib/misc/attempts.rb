@@ -28,17 +28,17 @@ gle = RGleBuilder.build do
   layout 2, 3
   thumbsize 12, 8 
   beg :graph do
-     xaxis :min => -1, :max => 1
-     yaxis "min -1 max 1"
-     xtitle "kot [deg]"
-     xlabels :off
+    xaxis :min => -1, :max => 1
+    yaxis "min -1 max 1"
+    xtitle "kot [deg]"
+    xlabels :off
 
-     let ""
-     d2 ""
-     data "file.name", "d1=c1,c3"
-     data  :file => "file.name", :d1 => "c1,c3"
-     data  :sql => "SELECT Chi, Phi FROM diehedrals WHERE resid=18 AND frame>1000 AND frame<3000",
-           :file => "file.name", :plot => :all
+    let ""
+    d2 ""
+    data "file.name", "d1=c1,c3"
+    data  :file => "file.name", :d1 => "c1,c3"
+    data  :sql => "SELECT Chi, Phi FROM diehedrals WHERE resid=18 AND frame>1000 AND frame<3000",
+      :file => "file.name", :plot => :all
      
 
      
@@ -59,3 +59,15 @@ end
 puts gle
 
 #puts gle.gle_string
+class ForFun
+  def outer str
+    puts "outer #{str}"
+    def inner str
+      puts "inner #{str}"
+    end
+    inner str
+  end
+end
+f = ForFun.new
+f.outer "test"
+f.inner "test"

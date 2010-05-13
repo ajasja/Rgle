@@ -108,5 +108,36 @@ module RGle
       assert_match "size 1 2", gle.to_s
       assert_match "size 2 2", gle.to_s
     end
+
+    def test_get_gle_plot_command_line
+      gle = RGleBuilder.build "my.gle" do
+        beg :graph do
+          size "1 2"
+        end
+
+      end
+      
+      
+      line = gle.get_gle_plot_command_line :format => :png
+      assert_equal gle.gle_executable + " -output my.png -device png my.gle", line
+
+      line = gle.get_gle_plot_command_line :output => "test.psf"
+      assert_equal gle.gle_executable + " -output test.psf -device psf my.gle", line
+
+      line = gle.get_gle_plot_command_line :output => "test.image", :format => :svg
+      assert_equal gle.gle_executable + " -output test.image -device svg my.gle", line
+
+      unnamed = RGleBuilder.build  do
+        beg :graph do
+          size "1 2"
+        end
+      end
+
+      #test unnamed script
+      line = unnamed.get_gle_plot_command_line :output => "test.psf"
+      assert_equal gle.gle_executable + " -output test.psf -device psf test.gle", line
+      #name sould be modifed
+      assert_equal "test.gle",  unnamed.gle_file_name
+    end
   end
 end

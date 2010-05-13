@@ -11,7 +11,7 @@ module RGle
 
   class RGleBuilder
     attr_accessor :gle_string, :indent_count, :indent_string, :gle_file_name, :gle_executable
-    attr_accessor :layout_hdir, :layout_vdir, :gle_command
+    attr_accessor :layout_hdir, :layout_vdir
     #attr_reader :layout, :thumbsize
     def initialize
       @gle_string = ""
@@ -21,7 +21,7 @@ module RGle
       @thumbsize = nil
       @layout_hdir = :left_to_right
       @layout_vdir = :top_to_bottom
-      @gle_command = 'gle'
+      
       @cur_graph_number = 0;
       @cur_in_graph = false
       @gle_executable = "gle"
@@ -84,7 +84,7 @@ module RGle
     end
 
 
-    def save_to_file a_file_name
+    def save_to_file a_file_name=nil
       @gle_file_name = a_file_name if a_file_name
       if not @gle_file_name then raise "Must specify script file name" end
       File.open(@gle_file_name, "w") { |f| f.write self.to_s}
@@ -95,6 +95,54 @@ module RGle
       
       #`#{@gle_executable} -p #{@gle_file_name}`
       system("#{@gle_executable} -p #{@gle_file_name}")
+    end
+
+    def get_gle_plot_command_line opts={}
+      #defaults = {:format => :png, :output => "temp"}
+      #opts =  defaults.merge(opts)
+      #raise an error if the format and the output are not specified
+      
+      extension = nil
+      extension = File.extname(opts[:output]) if opts[:output]
+      unless opts[:format] or extension then
+        raise "Either the format or the extension must be specified."
+      end
+      #set the format according to the file name extension if no format is given
+      if not opts[:format] then
+        opts[:format] = extension[1..-1].to_sym
+      end
+      if extension.nil? or extension.empty? then
+        extension = '.'+opts[:format].to_s
+      end
+      gle_format = "-device #{opts[:format]}"
+
+      unless opts[:output] or @gle_file_name then
+        raise "Either the output file name or the script file name must be set."
+      end
+
+      #if output has no extension and format is given then
+      if opts[:output]  and File.extname(opts[:output]).empty? then
+        opts[:output]=opts[:output]+extension
+      end
+      #set the script file name from output name if script file name is not specified
+      if (not @gle_file_name) and opts[:output] then
+        @gle_file_name = File.basename(opts[:output], extension)+'.gle'
+      end
+
+      
+      
+      if (not opts[:output]) and @gle_file_name then
+        opts[:output] = File.basename(@gle_file_name, '.gle')+extension
+      end
+
+      gle_command_string = [@gle_executable,"-output",
+        opts[:output],gle_format, opts[:options], @gle_file_name].compact.join(" ")
+    end
+    def plot! opts = {}
+      line = get_gle_plot_command_line(opts)
+      save_to_file
+      puts line
+      `#{line}`
     end
     ######special building methods start here##################
     # layout direction can be specified as

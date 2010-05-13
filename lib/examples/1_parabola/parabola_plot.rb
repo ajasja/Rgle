@@ -4,7 +4,7 @@
 require File.dirname(__FILE__)+'/../../rgle'
 include RGle
 
-gle = RGleBuilder.build do
+gle = RGleBuilder.build "parabola_plot.gle" do
   size 12, 8
   beg :graph do
     title "Parabola"
@@ -18,6 +18,6 @@ gle = RGleBuilder.build do
   end
 end
 
-gle.preview! :file_name => "parabola.gle"
+gle.plot! :format => :png
 
 puts gle
