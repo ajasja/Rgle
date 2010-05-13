@@ -86,7 +86,9 @@ module RGle
     #executes gle with the -p option
     def preview! opts
       save_to_file opts[:file_name]
-      `#{@gle_executable} -p #{@gle_file_name}`
+      
+      #`#{@gle_executable} -p #{@gle_file_name}`
+      system("#{@gle_executable} -p #{@gle_file_name}")
     end
     ######special building methods start here##################
     # layout direction can be specified as
