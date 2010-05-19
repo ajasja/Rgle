@@ -13,12 +13,12 @@ module RGle
         xaxis :min, -1, :max, -1
       end
 
-      assert_equal "xaxis min -1 max -1\n", gle.to_s
+      assert_match "xaxis min -1 max -1", gle.to_s
 
       gle = RGleBuilder.build do
         xaxis :min => -1, :max => -1
       end
-      assert_equal "xaxis min -1 max -1\n", gle.to_s
+      assert_match "xaxis min -1 max -1", gle.to_s
     end
 
     
@@ -26,8 +26,13 @@ module RGle
       gle = RGleBuilder.build do
         layout 2, 3
         thumbsize 12, 10
-      end
+      end   
+      assert_match "size 24 30", gle.to_s
 
+      gle = RGleBuilder.build do
+        thumbsize 12, 10
+        layout 2, 3
+      end
       assert_match "size 24 30", gle.to_s
     end
 

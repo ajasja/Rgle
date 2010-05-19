@@ -159,7 +159,7 @@ module RGle
     
       #if thumbsize has been set
       if @thumbsize then
-        make_and_push_gle_line(:size,@layout[0]*@thumbsize[0], @layout1*@thumbsize[1])
+        make_and_push_gle_line(:size,@layout[0]*@thumbsize[0], @layout[1]*@thumbsize[1])
       end
     end
   
