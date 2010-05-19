@@ -1,14 +1,50 @@
+class String
+  def ends_with?(val)
+    self =~ /#{Regexp.escape val}\Z/
+  end
 
-module RGle
-  class String
-    def ends_with?(val)
-      self =~ /#{Regexp.escape val}\Z/
-    end
-
-    def starts_with?(val)
-      self =~ /\A#{Regexp.escape val}/
+  def starts_with?(val)
+    self =~ /\A#{Regexp.escape val}/
+  end
+end
+  
+#taken from
+# http://blog.jayfields.com/2008/02/ruby-dynamically-define-method.html
+class Class
+  def def_each(method_names,*args, &block)
+    method_names=method_names.to_a
+    method_names.each do |method_name|
+      define_method method_name do |*args|
+        instance_exec method_name, *args, &block
+      end
     end
   end
+end
+#class Object
+#  module InstanceExecHelper; end
+#  include InstanceExecHelper
+#  def instance_exec(*args, &block)
+#    begin
+#      old_critical, Thread.critical = Thread.critical, true
+#      n = 0
+#      n += 1 while respond_to?(mname="__instance_exec#{n}")
+#      InstanceExecHelper.module_eval{ define_method(mname, &block) }
+#    ensure
+#      Thread.critical = old_critical
+#    end
+#    begin
+#      ret = send(mname, *args)
+#    ensure
+#      InstanceExecHelper.module_eval{ remove_method(mname) } rescue nil
+#    end
+#    ret
+#  end
+#end
+
+
+
+module RGle
+
 
   class RGleBuilder
     attr_accessor :gle_string, :indent_count, :indent_string, :gle_file_name, :gle_executable
@@ -228,41 +264,27 @@ module RGle
       end
     end
 
-  
-
-    def xaxis *args
-     
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:xaxis, :min, h[:min], :max, h[:max])
+    #special syntax handling for axis scale
+    #all the methods are declared at the same time;)
+#    [:xaxis, :yaxis, :x2axis, :y2axis].each do |method_name|
+#      define_method(method_name) do |*args|
+#        if (args.size == 1) and (args[0].is_a?(Hash)) then
+#          h = args[0]
+#          make_and_push_gle_line(method_name, :min, h[:min], :max, h[:max])
+#        else
+#          make_and_push_gle_line(method_name, args)
+#        end
+#      end
+#    end
+#    
+    #special syntax handling for axis scale
+    #all the methods are declared at the same time;)
+  def_each [:xaxis, :yaxis, :x2axis, :y2axis] do |method_name, *args|
+    if (args.size == 1) and (args[0].is_a?(Hash)) then
+      h = args[0]
+        make_and_push_gle_line(method_name, :min, h[:min], :max, h[:max])
       else
-        make_and_push_gle_line(:xaxis, args)
-      end
-    end
-
-    def yaxis *args
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:yaxis, :min, h[:min], :max, h[:max])
-      else
-        make_and_push_gle_line(:yaxis, args)
-      end
-    end
-    def x2axis *args      
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:xaxis, :min, h[:min], :max, h[:max])
-      else
-        make_and_push_gle_line(:xaxis, args)
-      end
-    end
-
-    def y2axis *args
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        make_and_push_gle_line(:yaxis, :min, h[:min], :max, h[:max])
-      else
-        make_and_push_gle_line(:yaxis, args)
+        make_and_push_gle_line(method_name, args)
       end
     end
 
