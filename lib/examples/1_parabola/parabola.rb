@@ -1,6 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
-
 require File.dirname(__FILE__)+'/../../rgle'
 include RGle
 

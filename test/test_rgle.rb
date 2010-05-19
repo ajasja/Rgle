@@ -139,6 +139,23 @@ module RGle
       assert_match("amove 12 0", gle.to_s)
     end
 
+    def test_graph_layouting
+      gle = RGleBuilder.build do
+        layout 2, 3, :top_left, :right
+        thumbsize 12, 10
+        1.upto 6 do
+          beg :graph do            
+          end
+        end
+      end
+#      assert_match(/begin\sgraph\s*amove 0 20/,gle.to_s)
+#      assert_match(/begin\sgraph\s*amove 12 20/,gle.to_s)
+#      assert_match(/begin\sgraph\s*amove 0 10/,gle.to_s)
+#      assert_match(/begin\sgraph\s*amove 12 10/,gle.to_s)
+#      assert_match(/begin\sgraph\s*amove 0 0/,gle.to_s)
+#      assert_match(/begin\sgraph\s*amove 12 0/,gle.to_s)
+    end
+
     def test_build_with_file_name
       gle = RGleBuilder.build do
         layout 2, 4, :rl, :bt

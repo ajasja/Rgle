@@ -273,13 +273,15 @@ module RGle
       @cur_graph_number += 1
       @cur_in_graph = true
 
+      make_and_push_graph_position(@cur_graph_number) if layout_set?
+
       push_to_gle_string("begin graph")
-      if @layout and @thumbsize then
-        make_and_push_gle_line(:amove, make_and_push_graph_position(@cur_graph_number))
-      end
+
       do_indent
+      make_and_push_gle_line(:size, @thumbsize[0], @thumbsize[1]) if layout_set?
       yield if block_given?
       do_unindent
+
       push_to_gle_string("end graph")
     
 
