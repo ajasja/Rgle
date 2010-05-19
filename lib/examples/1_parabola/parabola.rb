@@ -6,7 +6,7 @@ gle = RGleBuilder.build do
   beg :graph do
     title "Parabola"
     xtitle "x"
-    ytitle '"f(x) = (x-2)^2"' #the string quoting is cumbersome...
+    ytitle "f(x) = (x-2)^2"
     let "d1 = (x-2)^2 from 0 to 4 step 0.1"
 
     key "pos br compact"
