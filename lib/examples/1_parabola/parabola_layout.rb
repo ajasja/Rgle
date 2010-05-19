@@ -9,9 +9,9 @@ gle = RGleBuilder.build do
   thumbsize 12, 10
   1.upto(6) do |k|
     beg :graph do
-      title "\"Parabola with k #{k}\""
-      xtitle "x"
-      ytitle '"f(x) = ('+k.to_s+'x)^2"' #the string quoting is cumbersome...
+      title "Parabola with k #{k}"
+      xtitle :x
+      ytitle "f(x) = (#{k}x)^2"
 
       let "d1 = (#{k}*x)^2 from -1 to 1 step 0.01"
 

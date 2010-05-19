@@ -266,26 +266,36 @@ module RGle
 
     #special syntax handling for axis scale
     #all the methods are declared at the same time;)
-#    [:xaxis, :yaxis, :x2axis, :y2axis].each do |method_name|
-#      define_method(method_name) do |*args|
-#        if (args.size == 1) and (args[0].is_a?(Hash)) then
-#          h = args[0]
-#          make_and_push_gle_line(method_name, :min, h[:min], :max, h[:max])
-#        else
-#          make_and_push_gle_line(method_name, args)
-#        end
-#      end
-#    end
-#    
+    #    [:xaxis, :yaxis, :x2axis, :y2axis].each do |method_name|
+    #      define_method(method_name) do |*args|
+    #        if (args.size == 1) and (args[0].is_a?(Hash)) then
+    #          h = args[0]
+    #          make_and_push_gle_line(method_name, :min, h[:min], :max, h[:max])
+    #        else
+    #          make_and_push_gle_line(method_name, args)
+    #        end
+    #      end
+    #    end
+    #
     #special syntax handling for axis scale
     #all the methods are declared at the same time;)
-  def_each [:xaxis, :yaxis, :x2axis, :y2axis] do |method_name, *args|
-    if (args.size == 1) and (args[0].is_a?(Hash)) then
-      h = args[0]
+    def_each [:xaxis, :yaxis, :x2axis, :y2axis] do |method_name, *args|
+      if (args.size == 1) and (args[0].is_a?(Hash)) then
+        h = args[0]
         make_and_push_gle_line(method_name, :min, h[:min], :max, h[:max])
       else
         make_and_push_gle_line(method_name, args)
       end
+    end
+
+    def_each [:title, :xtitle, :ytitle, :x2title, :y2title] do |method_name, *args|
+      puts "quoting #{args[0]}"
+      if (args.size >= 1) and (args[0].is_a?(String)) then
+        #quote the string unless the first and last chars are allready quotes
+        puts "#{args[0][1]} and #{args[0][-1]}"
+        args[0]=args[0].dump unless (args[0][0,1]=='"') and (args[0][-1,1]=='"')
+      end
+      make_and_push_gle_line(method_name, args)
     end
 
     def begin_graph(*args, &block)
