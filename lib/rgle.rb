@@ -1,3 +1,4 @@
+
 module RGle
   class String
     def ends_with?(val)
@@ -9,9 +10,11 @@ module RGle
     end
   end
 
+
+
   class RGleBuilder
     attr_accessor :gle_string, :indent_count, :indent_string, :gle_file_name, :gle_executable
-    attr_accessor :layout_start, :layout_direction
+    attr_accessor :layout_start, :layout_direction, :layout_size
     #attr_reader :layout, :thumbsize
     def initialize
       @gle_string = ""
@@ -79,11 +82,42 @@ module RGle
     end
 
     #returns the position of the graph depending on the position and layout
-    def get_graph_position(pos_number)
+    
+    def get_graph_grid_layout_position(pos)
+      if @layout_direction==:horizontal then
+
+        row = (pos-1)/@layout[0]+1
+        col = pos - (row-1)*@layout[0]
+
+      end
+
+      if @layout_direction==:vertical then
+        col = (pos-1)/@layout[1]+1
+        row = pos - (col-1)*@layout[1]
+      end
+
+      return row, col
+    end
+    
+    def make_and_push_graph_position(pos_number)
+      if not layout_set?
+        raise "layout has not been set"
+      end
+      
+      ## for now only top_left is supported!
+      row, col = get_graph_grid_layout_position(pos_number)
+      x = (col-1)*@thumbsize[0]
+      y = (@layout[1]-row)*@thumbsize[1]
+
+      make_and_push_gle_line(:amove, x, y)
       
     end
 
-
+    #returns true if the layout and thumb_size have been set.
+    def layout_set?
+      (@layout!=nil) and (@thumbsize!=nil)
+      
+    end
     def save_to_file a_file_name=nil
       @gle_file_name = a_file_name if a_file_name
       if not @gle_file_name then raise "Must specify script file name" end
@@ -156,10 +190,34 @@ module RGle
     def layout x, y, *args
       @layout = [x, y]
      
-    
+      if (args.size == 1) and (args[0].is_a?(Hash)) then
+        hsh = args[0]
+        @layout_start = hsh[:start] if hsh.has_key? :start
+        @layout_direction = hsh[:direction] if hsh.has_key? :direction
+      end #if
+
+      if (args.size == 2)  then
+        @layout_start     = args[0]
+        @layout_direction = args[1]
+      end #if
+
+      #expand shortcut options
+      case @layout_start
+      when :tl then @layout_start=:top_left
+      when :tr then @layout_start=:top_right
+      when :bl then @layout_start=:bottom_left
+      when :br then @layout_start=:bottom_right
+      end
+
+      case @layout_direction
+      when :right, :left then @layout_direction=:horizontal
+      when :top, :bottom, :down, :up then @layout_direction=:vertical
+      end
+
       #if thumbsize has been set
       if @thumbsize then
-        make_and_push_gle_line(:size,@layout[0]*@thumbsize[0], @layout[1]*@thumbsize[1])
+        @layout_size = [@layout[0]*@thumbsize[0], @layout[1]*@thumbsize[1]]
+        make_and_push_gle_line(:size, @layout_size[0], @layout_size[1])
       end
     end
   
@@ -167,7 +225,8 @@ module RGle
     def thumbsize x, y
       @thumbsize = [x, y]
       if @layout then
-        make_and_push_gle_line(:size, @layout[0]*@thumbsize[0], @layout[1]*@thumbsize[1])
+        @layout_size = [@layout[0]*@thumbsize[0], @layout[1]*@thumbsize[1]]
+        make_and_push_gle_line(:size, @layout_size[0], @layout_size[1])
       end
     end
 
@@ -216,7 +275,7 @@ module RGle
 
       push_to_gle_string("begin graph")
       if @layout and @thumbsize then
-        make_and_push_gle_line(:amove, get_graph_position(@cur_graph_number))
+        make_and_push_gle_line(:amove, make_and_push_graph_position(@cur_graph_number))
       end
       do_indent
       yield if block_given?

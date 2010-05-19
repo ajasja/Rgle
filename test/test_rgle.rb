@@ -7,6 +7,7 @@ require 'test/unit'
 require 'rgle'
 
 module RGle
+  
   class RGleBuilderTests < Test::Unit::TestCase
     def test_xaxis
       gle = RGleBuilder.build do
@@ -36,6 +37,53 @@ module RGle
       assert_match "size 24 30", gle.to_s
     end
 
+    def test_layout_set
+      gle = RGleBuilder.build do
+        thumbsize 12, 10
+        layout 2, 3
+      end
+      assert_equal(true, gle.layout_set?)
+
+      gle = RGleBuilder.build do
+        thumbsize 12, 10
+
+      end
+      assert_equal(false, gle.layout_set?)
+
+      gle = RGleBuilder.build do
+        layout 2, 3
+      end
+      assert_equal(false, gle.layout_set?)
+
+    end
+
+    def test_layout_direction
+      #test defaults
+      gle = RGleBuilder.build do
+        layout 2, 3
+      end
+      assert_equal(gle.layout_start, :top_left)
+      assert_equal(gle.layout_direction, :horizontal)
+
+      gle = RGleBuilder.build do
+        layout 2, 3, :start => :top_right, :direction => :down
+      end
+      assert_equal(:top_right, gle.layout_start)
+      assert_equal(:vertical, gle.layout_direction)
+
+      gle = RGleBuilder.build do
+        layout 2, 3, :start => :top_right, :direction => :left
+      end
+      assert_equal(:top_right, gle.layout_start)
+      assert_equal(:horizontal, gle.layout_direction)
+
+      gle = RGleBuilder.build do
+        layout 2, 3, :start => :br, :direction => :up
+      end
+      assert_equal(:bottom_right, gle.layout_start)
+      assert_equal(:vertical, gle.layout_direction)
+    end
+
     def test_begin_graph
       gle = RGleBuilder.build do
         beg :graph do
@@ -55,11 +103,40 @@ module RGle
 
     end
 
-    def test_get_graph_position
+    def test_make_and_push_graph_position
       gle = RGleBuilder.build do
-        layout 2, 4, :rl, :bt
-        thumbsize 10, 12
+        layout 2, 3, :top_left, :right
+        thumbsize 12, 10
       end
+      gle.make_and_push_graph_position(1)
+      assert_match("amove 0 20", gle.to_s)
+      gle.make_and_push_graph_position(2)
+      assert_match("amove 12 20", gle.to_s)
+      gle.make_and_push_graph_position(3)
+      assert_match("amove 0 10", gle.to_s)
+      gle.make_and_push_graph_position(4)
+      assert_match("amove 12 10", gle.to_s)
+      gle.make_and_push_graph_position(5)
+      assert_match("amove 0 0", gle.to_s)
+      gle.make_and_push_graph_position(6)
+      assert_match("amove 12 0", gle.to_s)
+
+      gle = RGleBuilder.build do
+        layout 2, 3, :top_left, :down
+        thumbsize 12, 10
+      end
+      gle.make_and_push_graph_position(1)
+      assert_match("amove 0 20", gle.to_s)
+      gle.make_and_push_graph_position(2)
+      assert_match("amove 0 10", gle.to_s)
+      gle.make_and_push_graph_position(3)
+      assert_match("amove 0 0", gle.to_s)
+      gle.make_and_push_graph_position(4)
+      assert_match("amove 12 20", gle.to_s)
+      gle.make_and_push_graph_position(5)
+      assert_match("amove 12 10", gle.to_s)
+      gle.make_and_push_graph_position(6)
+      assert_match("amove 12 0", gle.to_s)
     end
 
     def test_build_with_file_name
