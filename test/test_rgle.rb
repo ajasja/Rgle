@@ -148,12 +148,13 @@ module RGle
           end
         end
       end
-#      assert_match(/begin\sgraph\s*amove 0 20/,gle.to_s)
-#      assert_match(/begin\sgraph\s*amove 12 20/,gle.to_s)
-#      assert_match(/begin\sgraph\s*amove 0 10/,gle.to_s)
-#      assert_match(/begin\sgraph\s*amove 12 10/,gle.to_s)
-#      assert_match(/begin\sgraph\s*amove 0 0/,gle.to_s)
-#      assert_match(/begin\sgraph\s*amove 12 0/,gle.to_s)
+      
+      assert_match(/amove 0 20\s*begin\sgraph\s*size 12 10/,gle.to_s)
+      assert_match(/amove 12 20\s*begin\sgraph\s*size 12 10/,gle.to_s)
+      assert_match(/amove 0 10\s*begin\sgraph\s*size 12 10/,gle.to_s)
+      assert_match(/amove 12 10\s*begin\sgraph\s*size 12 10/,gle.to_s)
+      assert_match(/amove 0 0\s*begin\sgraph\s*size 12 10/,gle.to_s)
+      assert_match(/amove 12 0\s*begin\sgraph\s*size 12 10/,gle.to_s)
     end
 
     def test_build_with_file_name

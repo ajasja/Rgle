@@ -3,7 +3,9 @@ include RGle
 
 gle = RGleBuilder.build do
   
+  
   layout 2, 3
+  #layout 2, 3, :direction => :down #try this as well
   thumbsize 12, 10
   1.upto(6) do |k|
     beg :graph do

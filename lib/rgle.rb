@@ -10,8 +10,6 @@ module RGle
     end
   end
 
-
-
   class RGleBuilder
     attr_accessor :gle_string, :indent_count, :indent_string, :gle_file_name, :gle_executable
     attr_accessor :layout_start, :layout_direction, :layout_size
@@ -250,8 +248,7 @@ module RGle
         make_and_push_gle_line(:yaxis, args)
       end
     end
-    def x2axis *args
-      puts "#{args.size} #{args.class}"
+    def x2axis *args      
       if (args.size == 1) and (args[0].is_a?(Hash)) then
         h = args[0]
         make_and_push_gle_line(:xaxis, :min, h[:min], :max, h[:max])
