@@ -11,7 +11,7 @@ module RGle
 
   class RGleBuilder
     attr_accessor :gle_string, :indent_count, :indent_string, :gle_file_name, :gle_executable
-    attr_accessor :layout_hdir, :layout_vdir
+    attr_accessor :layout_start, :layout_direction
     #attr_reader :layout, :thumbsize
     def initialize
       @gle_string = ""
@@ -19,8 +19,8 @@ module RGle
       @indent_count = 0
       @layout = nil
       @thumbsize = nil
-      @layout_hdir = :left_to_right
-      @layout_vdir = :top_to_bottom
+      @layout_start = :top_left
+      @layout_direction   = :horizontal
       
       @cur_graph_number = 0;
       @cur_in_graph = false
@@ -156,21 +156,7 @@ module RGle
     def layout x, y, *args
       @layout = [x, y]
      
-      if (args.size == 1) and (args[0].is_a?(Hash)) then
-        h = args[0]
-        if h.has_key?(:right) then @layout_hdir=:right_to_left else @layout_hdir=:left_to_right end
-        if h.has_key?(:bottom) then @layout_vdir=:bottom_to_top else @layout_vdir=:top_to_bottom end
-      end #if
-
-      if (args.size == 2)  then
-        @layout_hdir = args[0]
-        @layout_vdir = args[1]
-        @layout_hdir = :right_to_left if @layout_hdir==:rl
-        @layout_hdir = :left_to_right if @layout_hdir==:lr
-        @layout_vdir = :top_to_bottom if @layout_vdir==:tb
-        @layout_vdir = :bottom_to_top if @layout_vdir==:bt
-      end #if
-
+    
       #if thumbsize has been set
       if @thumbsize then
         make_and_push_gle_line(:size,@layout[0]*@thumbsize[0], @layout1*@thumbsize[1])
