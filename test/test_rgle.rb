@@ -1,6 +1,6 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
-
+# TODO add tests for xtitle, ytitle itd...
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
 require 'test/unit'
@@ -211,8 +211,140 @@ module RGle
       #test unnamed script
       line = unnamed.get_gle_plot_command_line :output => "test.psf"
       assert_equal gle.gle_executable + " -output test.psf -device psf test.gle", line
-      #name sould be modifed
+      #name should be modified
       assert_equal "test.gle",  unnamed.gle_file_name
     end
+
+    def test_xtitle
+      #Test automatic quoting
+      gle = RGleBuilder.build "my.gle" do
+        beg :graph do
+          a = "title"
+          xtitle "My #{a}"
+        end
+      end
+      assert_match(/"My title"/, gle.to_s)
+
+      #With existing quotes
+      gle = RGleBuilder.build "my.gle" do
+        beg :graph do
+          a = "title"
+          xtitle "\"My #{a}\""
+        end
+      end
+      assert_match(/"My title"/, gle.to_s)
+    end
+
+    def test_get_sql_command_line
+      sql_string = ""
+      gle = RGleBuilder.build "my.gle" do
+        sql_string = sql? "Select * from table;", :database => 'test_db', :file => 'my.dat'
+      end
+      #puts sql_string
+      assert_match('Select * from table;', sql_string)
+      assert_match('test_db', sql_string)
+      assert_match('my.dat', sql_string)
+
+      #Test without specifying output file (it should take the name form the gle and change extension to csv)
+      sql_string = ""
+      gle = RGleBuilder.build "my.gle" do
+        sql_string = sql? "Select * from table;", :database => 'test_db'
+      end
+      #puts sql_string
+      assert_match('Select * from table;', sql_string)
+      assert_match('test_db', sql_string)
+      assert_match('my.csv', sql_string)
+
+      #specify database separately
+      sql_string = ""
+      gle = RGleBuilder.build "my.gle" do
+        database 'test_db'
+        sql_string = sql? "Select * from table;"
+      end
+      #puts sql_string
+      assert_match('Select * from table;', sql_string)
+      assert_match('test_db', sql_string)
+      assert_match('my.csv', sql_string)
+
+    end
+
+    def test_database_queries
+
+      gle = RGleBuilder.build "my.gle" do
+        database 'test_db'
+        sql "Select * from table;"
+        sql "Select * from table1;", :database => 'test_db1', :file => 'my1.dat'
+        sql "Select * from table2;", :database => 'test_db1', :file => 'my2.dat'
+      end
+      assert_equal(3, gle.database_queries.size)
+      #puts sql_string
+      sql_string = gle.database_queries[0][:cmd]
+      assert_match('Select * from table;', sql_string)
+      assert_match('test_db', sql_string)
+      assert_match('my.csv', sql_string)
+
+      sql_string = gle.database_queries[1][:cmd]
+      assert_match('Select * from table1;', sql_string)
+      assert_match('test_db1', sql_string)
+      assert_match('my1.dat', sql_string)
+
+      sql_string = gle.database_queries[2][:cmd]
+      assert_match('Select * from table2;', sql_string)
+      assert_match('test_db1', sql_string)
+      assert_match('my2.dat', sql_string)
+
+
+    end
+
+    def test_skip_query
+      gle = RGleBuilder.build "my.gle" do
+        database 'test_db'
+        sql "Select * from table;", :file => __FILE__, :skip => :if_exists
+        sql "Select * from table1;", :database => 'test_db1', :file => 'my1.dat', :skip => :allways
+        sql "Select * from table2;", :database => 'test_db1', :file => 'my2.dat'
+      end
+      
+      assert gle.skip_query?(gle.database_queries[0])
+      assert gle.skip_query?(gle.database_queries[1])
+      assert !gle.skip_query?(gle.database_queries[2])
+
+      gle = RGleBuilder.build "my.gle" do
+        database 'test_db', :skip => :all
+        sql "Select * from table;", :file => __FILE__
+        sql "Select * from table1;", :database => 'test_db1', :file => 'my1.dat'
+        #database level overrides individual sql queries
+        sql "Select * from table2;", :database => 'test_db1', :file => 'my2.dat', :skip => :never
+      end
+
+      assert gle.skip_query?(gle.database_queries[0])
+      assert gle.skip_query?(gle.database_queries[1])
+      assert gle.skip_query?(gle.database_queries[2])
+
+      gle = RGleBuilder.build "my.gle" do
+        database 'test_db', :skip => :never
+        sql "Select * from table;", :file => __FILE__
+        sql "Select * from table1;", :database => 'test_db1', :file => 'my1.dat'
+        #database level overrides individual sql queries
+        sql "Select * from table2;", :database => 'test_db1', :file => 'my2.dat', :skip => :all
+      end
+
+      assert !gle.skip_query?(gle.database_queries[0])
+      assert !gle.skip_query?(gle.database_queries[1])
+      assert !gle.skip_query?(gle.database_queries[2])
+
+      gle = RGleBuilder.build "my.gle" do
+        database 'test_db', :skip => :if_exists
+        sql "Select * from table;", :file => __FILE__
+        sql "Select * from table1;", :database => 'test_db1', :file => 'my1.dat'
+        #database level overrides individual sql queries
+        sql "Select * from table2;", :database => 'test_db1', :file => 'my2.dat', :skip => :all
+      end
+
+      assert gle.skip_query?(gle.database_queries[0])
+      assert !gle.skip_query?(gle.database_queries[1])
+      assert !gle.skip_query?(gle.database_queries[2])
+    end
+
+
   end
 end

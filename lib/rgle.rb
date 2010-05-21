@@ -49,6 +49,7 @@ module RGle
   class RGleBuilder
     attr_accessor :gle_string, :indent_count, :indent_string, :gle_file_name, :gle_executable
     attr_accessor :layout_start, :layout_direction, :layout_size
+    attr_accessor :database_queries, :databse_skip_queries
     #attr_reader :layout, :thumbsize
     def initialize
       @gle_string = ""
@@ -64,6 +65,11 @@ module RGle
       @gle_executable = "gle"
       @gle_options = "-p"
       @gle_file_name =  nil
+      #database, SQL, output_file_name
+      @database_client_command = "sqlite3 -csv -separator ',' -nullvalue 'NaN'  '%s' '%s' > '%s'"      
+      @database_queries = []
+      @database_file_name = nil
+      @databse_skip_queries = nil
     end
 
     def self.build a_file_name=nil, &block
@@ -212,11 +218,57 @@ module RGle
       puts line
       `#{line}`
     end
+    #Options
+    #:database => name of database
+    #:file => output file for data. If not specified
+    def get_sql_command_line(sql_string, opts={})
+      @database_file_name = opts[:database] unless opts[:database].nil?
+
+      raise("Database not specified")  unless @database_file_name
+      data_out_file_name = opts[:file]
+      data_out_file_name ||= File.basename(@gle_file_name, '.gle')+'.csv'
+      raise("File name not specified") unless data_out_file_namee
+
+      return sprintf(@database_client_command, @database_file_name, sql_string, data_out_file_name)
+    end
     ######special building methods start here##################
-    # layout direction can be specified as
-    # :left => :right, :top => :bottom or
-    # :left_to_right,  :top_to_bottom or
-    # :lr, :tb
+
+    def database(name, opts = {})
+      @database_file_name = name
+      if opts.has_key?(:skip) then
+         @databse_skip_queries =opts[:skip]
+      end
+    end
+
+    #Just for testing
+    def sql?(sql_string, opts={})
+      return get_sql_command_line(sql_string, opts)
+    end
+
+    #executes query immediately
+    def sql! (sql_string, opts={})
+      cmd = get_sql_command_line(sql_string, opts)
+      puts `#{cmd}`
+    end
+
+    #Adds query to list. It is executed with plot!
+    def sql (sql_string, opts={})
+      opts[:cmd] = get_sql_command_line(sql_string, opts)
+      @database_queries << opts
+    end
+
+    def skip_query?(h)
+      h[:skip] = @databse_skip_queries if @databse_skip_queries
+      h[:skip]=:allways if h[:skip]==:all
+      ((h[:skip]==:if_exists) and File.exists?(h[:file])) or (h[:skip]==:allways)
+    end
+    
+    def execute_sql_queries!
+      @database_queries.each {|h|
+        #skip execution if either the skip => if exists is given and file exists or skip if some flags are set
+        `#{h[:cmd]}` unless skip_query?(h)
+      }
+    end
     def raw str
       make_and_push_gle_line(str)
     end
@@ -289,10 +341,10 @@ module RGle
     end
 
     def_each [:title, :xtitle, :ytitle, :x2title, :y2title] do |method_name, *args|
-      puts "quoting #{args[0]}"
+      
       if (args.size >= 1) and (args[0].is_a?(String)) then
         #quote the string unless the first and last chars are allready quotes
-        puts "#{args[0][1]} and #{args[0][-1]}"
+        
         args[0]=args[0].dump unless (args[0][0,1]=='"') and (args[0][-1,1]=='"')
       end
       make_and_push_gle_line(method_name, args)

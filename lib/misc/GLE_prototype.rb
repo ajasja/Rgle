@@ -10,8 +10,7 @@ graphs = RGleBuilder.build do
    thumbsize 12, 8 
    
    database "diedrals.db"
-   make_query  :sql => "SELECT Chi, Phi FROM diehedrals WHERE resid=18 AND frame>1000 AND frame<3000", 
-               :file => "file.name"
+   sql "SELECT Chi, Phi FROM diehedrals WHERE resid=18 AND frame>1000 AND frame<3000", :file => "file.name"
    
    font :texcmr
    raw ""
