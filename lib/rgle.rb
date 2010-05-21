@@ -348,7 +348,7 @@ module RGle
       end
     end
 
-    def_each [:title, :xtitle, :ytitle, :x2title, :y2title] do |method_name, *args|
+    def_each [:title, :xtitle, :ytitle, :x2title, :y2title, :write] do |method_name, *args|
       
       if (args.size >= 1) and (args[0].is_a?(String)) then
         #quote the string unless the first and last chars are allready quotes
