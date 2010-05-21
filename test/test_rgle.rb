@@ -169,6 +169,13 @@ module RGle
         thumbsize 10, 12
       end
       assert_equal "my.gle",gle.gle_file_name
+
+      #Test adding extension
+      gle = RGleBuilder.build "my" do
+        layout 2, 4, :rl, :bt
+        thumbsize 10, 12
+      end
+      assert_equal "my.gle", gle.gle_file_name
     end
 
     def test_append

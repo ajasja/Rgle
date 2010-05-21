@@ -66,7 +66,7 @@ module RGle
       @gle_options = "-p"
       @gle_file_name =  nil
       #database, SQL, output_file_name
-      @database_client_command = "sqlite3 -csv -separator ',' -nullvalue 'NaN'  '%s' '%s' > '%s'"      
+      @database_client_command = 'sqlite3 -csv -header -separator "," -nullvalue "NaN"  %s "%s" > "%s"'
       @database_queries = []
       @database_file_name = nil
       @databse_skip_queries = nil
@@ -74,7 +74,12 @@ module RGle
 
     def self.build a_file_name=nil, &block
       gle_builder = new
-      gle_builder.gle_file_name = a_file_name unless (a_file_name.nil? or a_file_name.empty?)
+      if !(a_file_name.nil? or a_file_name.empty?)
+        a_file_name=a_file_name+'.gle' unless /\.[a-zA-Z]+$/ =~ a_file_name
+        gle_builder.gle_file_name = a_file_name
+
+      end
+      
       gle_builder.instance_eval &block
       return gle_builder
     end
@@ -164,11 +169,12 @@ module RGle
       File.open(@gle_file_name, "w") { |f| f.write self.to_s}
     end
     #executes gle with the -p option
-    def preview! opts
+    def preview! opts={}
+      execute_sql_queries!
       save_to_file opts[:file_name]
       
-      #`#{@gle_executable} -p #{@gle_file_name}`
-      system("#{@gle_executable} -p #{@gle_file_name}")
+      `#{@gle_executable} -p #{@gle_file_name}`
+      #system("#{@gle_executable} -p #{@gle_file_name}")
     end
 
     def get_gle_plot_command_line opts={}
@@ -213,6 +219,7 @@ module RGle
         opts[:output],gle_format, opts[:options], @gle_file_name].compact.join(" ")
     end
     def plot! opts = {}
+      execute_sql_queries!
       line = get_gle_plot_command_line(opts)
       save_to_file
       puts line
@@ -227,7 +234,7 @@ module RGle
       raise("Database not specified")  unless @database_file_name
       data_out_file_name = opts[:file]
       data_out_file_name ||= File.basename(@gle_file_name, '.gle')+'.csv'
-      raise("File name not specified") unless data_out_file_namee
+      raise("File name not specified") unless data_out_file_name
 
       return sprintf(@database_client_command, @database_file_name, sql_string, data_out_file_name)
     end
@@ -267,6 +274,7 @@ module RGle
       @database_queries.each {|h|
         #skip execution if either the skip => if exists is given and file exists or skip if some flags are set
         `#{h[:cmd]}` unless skip_query?(h)
+        puts "#{h[:cmd]}"
       }
     end
     def raw str
