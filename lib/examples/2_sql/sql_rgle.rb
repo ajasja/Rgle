@@ -51,8 +51,8 @@ gle = RGleBuilder.build "sql_rgle" do
    
     data "sql_rgle.csv"
 
-    d1 "color red marker dot mscale 0.8"
-    d2 "color blue marker dot mscale 0.8"
+    d1 "color blue marker dot mscale 0.8"
+    d2 "color red marker dot mscale 0.8"
   end
 
   1.upto(numcols-3) { |i|
