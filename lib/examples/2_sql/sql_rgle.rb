@@ -15,6 +15,7 @@ def get_number_of_columns(afile, header=true, comment_char='!', separator=',', n
     while line[0..0]==comment_char do
       line = f.gets
     end
+
     puts line
     puts line.split(separator).reject {|a| (a.strip==nan_string) or a.empty?}
     return line.split(separator).reject {|a| (a.strip==nan_string) or a.empty?}.count
@@ -29,9 +30,10 @@ gle = RGleBuilder.build "sql_rgle" do
   database 'test_db'
   
   resid=6
+  #execute query immediately, so that one can read the number of columns that have a non NaN value
   sql! "Select frame, phi, psi, chi1,chi2,chi3,chi4,chi5  from dihedrals where resid=#{resid}"
   numcols = get_number_of_columns "sql_rgle.csv"
-  puts numcols
+  #puts numcols
   gsave
   amove 15.5, 19.4
   set "hei 0.8 color silver just center"
