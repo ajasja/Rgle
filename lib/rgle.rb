@@ -1,3 +1,6 @@
+#TODO: thumbstyle
+#TODO: thumbnum
+#TODO: pagetitle
 class String
   def ends_with?(val)
     self =~ /#{Regexp.escape val}\Z/
